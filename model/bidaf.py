@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
-
+import tensorflow as tf
 
 class BidafAttn(nn.Module):
     """from the BiDAF paper https://arxiv.org/abs/1611.01603.
@@ -17,11 +17,26 @@ class BidafAttn(nn.Module):
             The return value will have the same size as s1.
         :param channel_size: Hidden size of the input
         """
+        self.channel_size = channel_size * 3
         self.method = method
         self.get_h = get_h
-        if method == "original":
-            self.mlp = nn.Linear(channel_size * 3, 1, bias=False)
-
+        
+    def dense(inputs):
+        return tf.layers.dense(inputs,
+                    self.channel_size * 3,
+                    activation=None,
+                    use_bias=True,
+                    kernel_initializer=None,
+                    bias_initializer=tf.zeros_initializer(),
+                    kernel_regularizer=None,
+                    bias_regularizer=None,
+                    activity_regularizer=None,
+                    kernel_constraint=None,
+                    bias_constraint=None,
+                    trainable=True,
+                    name=None,
+                    reuse=None)
+    
     def similarity(self, s1, l1, s2, l2):
         """
         :param s1: [B, t1, D]
@@ -33,12 +48,18 @@ class BidafAttn(nn.Module):
         if self.method == "original":
             t1 = s1.size(1)
             t2 = s2.size(1)
-            repeat_s1 = s1.unsqueeze(2).repeat(1, 1, t2, 1)  # [B, T1, T2, D]
-            repeat_s2 = s2.unsqueeze(1).repeat(1, t1, 1, 1)  # [B, T1, T2, D]
-            packed_s1_s2 = torch.cat([repeat_s1, repeat_s2, repeat_s1 * repeat_s2], dim=3)  # [B, T1, T2, D*3]
-            s = self.mlp(packed_s1_s2).squeeze()  # s is the similarity matrix from biDAF paper. [B, T1, T2]
+            repeat_s1 = tf.tile(tf.expand_dims(t1, 2), [1, 1, t2, 1])
+            repeat_s2 = tf.tile(tf.expand_dims(t1, 2), [1, t1, 1, 1])
+            packed_s1_s2 = tf.concat([repeat_s1, repeat_s2, repeat_s1 * repeat_s2], 3)
+            s = self.dense(packed_s1_s2)
+#             repeat_s1 = s1.unsqueeze(2).repeat(1, 1, t2, 1)  # [B, T1, T2, D]
+#             repeat_s2 = s2.unsqueeze(1).repeat(1, t1, 1, 1)  # [B, T1, T2, D]
+
+#             packed_s1_s2 = torch.cat([repeat_s1, repeat_s2, repeat_s1 * repeat_s2], dim=3)  # [B, T1, T2, D*3]
+#             s = self.mlp(packed_s1_s2).squeeze()  # s is the similarity matrix from biDAF paper. [B, T1, T2]
         elif self.method == "dot":
-            s = torch.bmm(s1, s2.transpose(1, 2))
+            s = tf.matmul(s1, tf.transpose(s2, [1, 2]))
+#             s = torch.bmm(s1, s2.transpose(1, 2))
 
         s_mask = s.data.new(*s.size()).fill_(1).byte()  # [B, T1, T2]
         # Init similarity mask using lengths
