@@ -76,6 +76,10 @@ class BidafAttn(nn.Module):
         attended vectors of s2 for each word in s1,
         signify which words in s2 are most relevant to words in s1
         """
+        a_weight = tf.softmax(s, 2)  # [B, t1, t2]
+        a_weight.data.masked_fill_(a_weight.data != a_weight.data, 0)  # remove nan from softmax on -inf
+        u_tile = torch.bmm(a_weight, s2)  # [B, t1, t2] * [B, t2, D] -> [B, t1, D]
+
         a_weight = F.softmax(s, dim=2)  # [B, t1, t2]
         a_weight.data.masked_fill_(a_weight.data != a_weight.data, 0)  # remove nan from softmax on -inf
         u_tile = torch.bmm(a_weight, s2)  # [B, t1, t2] * [B, t2, D] -> [B, t1, D]
