@@ -7,7 +7,9 @@ import tensorflow as tf
 class MLP():
     def __init__(self, in_dim, out_dim, hsz, n_layers):
         super(MLP, self).__init__()
-
+        self.in_dim = in_dim
+        self.out_dim = out_dim
+        self.hsz = hsz
         layers = []
         prev_dim = in_dim
         for i in range(n_layers):
@@ -22,7 +24,23 @@ class MLP():
                 prev_dim = hsz
 
         self.main = nn.Sequential(*layers)
-
+    def dense():
+        return tf.layers.dense(
+            inputs,
+            units,
+            activation=None,
+            use_bias=True,
+            kernel_initializer=None,
+            bias_initializer=tf.zeros_initializer(),
+            kernel_regularizer=None,
+            bias_regularizer=None,
+            activity_regularizer=None,
+            kernel_constraint=None,
+            bias_constraint=None,
+            trainable=True,
+            name=None,
+            reuse=None
+        )
     def forward(self, x):
         return self.main(x)
 
