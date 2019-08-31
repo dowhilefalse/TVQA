@@ -2,9 +2,9 @@ __author__ = "Jie Lei"
 
 import torch
 import torch.nn as nn
+import tensorflow as tf
 
-
-class MLP(nn.Module):
+class MLP():
     def __init__(self, in_dim, out_dim, hsz, n_layers):
         super(MLP, self).__init__()
 
