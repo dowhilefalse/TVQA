@@ -10,24 +10,12 @@ class MLP():
         self.in_dim = in_dim
         self.out_dim = out_dim
         self.hsz = hsz
-        layers = []
-        prev_dim = in_dim
-        for i in range(n_layers):
-            if i == n_layers - 1:
-                layers.append(nn.Linear(prev_dim, out_dim))
-            else:
-                layers.extend([
-                    nn.Linear(prev_dim, hsz),
-                    nn.ReLU(True),
-                    nn.Dropout(0.5)
-                ])
-                prev_dim = hsz
-
-        self.main = nn.Sequential(*layers)
-    def dense():
+        self.layers = inputs
+        
+    def dense(inputs):
         return tf.layers.dense(
             inputs,
-            units,
+            self.hsz,
             activation=None,
             use_bias=True,
             kernel_initializer=None,
@@ -41,9 +29,17 @@ class MLP():
             name=None,
             reuse=None
         )
-    def forward(self, x):
-        return self.main(x)
-
+    
+    def forward(self, layers):
+        for i in range(n_layers):
+            if i == n_layers - 1:
+                layers = self.dense(self.out_dim) 
+#                 layers.append(nn.Linear(prev_dim, out_dim))
+            else:
+                layers = self.dense(layers, self.hsz)
+                layers = tf.nn.relu(layers)
+                layers = tf.nn.dropout(layers, 0.5)
+        return layers
 
 if __name__ == '__main__':
     test_in = torch.randn(10, 300)
