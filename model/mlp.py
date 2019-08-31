@@ -1,7 +1,3 @@
-__author__ = "Jie Lei"
-
-import torch
-import torch.nn as nn
 import tensorflow as tf
 
 class MLP():
@@ -34,7 +30,6 @@ class MLP():
         for i in range(n_layers):
             if i == n_layers - 1:
                 layers = self.dense(self.out_dim) 
-#                 layers.append(nn.Linear(prev_dim, out_dim))
             else:
                 layers = self.dense(layers, self.hsz)
                 layers = tf.nn.relu(layers)
