@@ -13,7 +13,8 @@ X = np.random.randn(2, 10, 8)
 # The second example is of length 6 
 X[1,6,:] = 0
 X_lengths = [10, 6]
-def RNNEncoder():
+def RNNEncoder(inputs, word_embedding_size, hidden_size, bidirectional=True,
+                 dropout_p=0, n_layers=1, rnn_type="lstm", return_hidden=True, return_outputs=True):
     cell = tf.nn.rnn_cell.LSTMCell(num_units=64, state_is_tuple=True)
     cell = tf.nn.rnn_cell.DropoutWrapper(cell=cell, output_keep_prob=0.5)
     cell = tf.nn.rnn_cell.MultiRNNCell(cells=[cell] * 4, state_is_tuple=True)
@@ -23,6 +24,9 @@ def RNNEncoder():
         dtype=tf.float64,
         sequence_length=X_lengths,
         inputs=X)
+    
+    
+    return outputs
 
 
 class RNNEncoder(nn.Module):
