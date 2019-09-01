@@ -1,5 +1,5 @@
 # TVQA
-PyTorch code accompanies the [TVQA dataset paper](https://arxiv.org/abs/1809.01696), in EMNLP 2018
+TF code accompanies the [TVQA dataset paper](https://arxiv.org/abs/1809.01696), in EMNLP 2018
 
 
 ### Dataset
@@ -32,15 +32,6 @@ relevant visual concepts.
 ### Model Overview
 A multi-stream model, each stream process different contextual inputs. 
 ![model figure](./imgs/model_main.png)
-
-### Requirements:
-- Python 2.7
-- PyTorch 0.4.0
-- tensorboardX
-- pysrt
-- tqdm
-- h5py
-- numpy
 
 ### Video Features
 - ImageNet feature: Extracted from ResNet101, 
@@ -94,13 +85,6 @@ For object detector, we used Faster R-CNN trained on Visual Genome, please refer
     python test.py --model_dir [results_dir] --mode valid
     ```
 
-
-### Results
-Please note this is a better version of the original implementation we used for EMNLP paper. 
-Bascially, I rewrote some of the data preprocessing code and updated the model to the latest 
-version of PyTorch, etc. By using this code, you should be able to get slightly 
-higher accuracy (~1%) than our paper.
-
 ### Links
 - Paper: https://arxiv.org/abs/1809.01696
 - Dataset and Leaderboard: http://tvqa.cs.unc.edu/
@@ -122,7 +106,3 @@ higher accuracy (~1%) than our paper.
 3. [x] Add model and training scripts
 4. [x] Add test scripts
 
-
-### Contact
-- Dataset: faq-tvqa-unc [at] googlegroups.com
-- Model: Jie Lei, jielei [at] cs.unc.edu
