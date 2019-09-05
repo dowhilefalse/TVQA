@@ -7,7 +7,7 @@ import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from tensorboardX import SummaryWriter
-
+import tensorflow as tf
 from model.tvqa_abc import ABC
 from tvqa_dataset import TVQADataset, pad_collate, preprocess_inputs
 from config import BaseOptions
@@ -27,14 +27,16 @@ def train(opt, dset, model, criterion, optimizer, epoch, previous_best_acc):
                                                      device=opt.device)
         outputs = model(*model_inputs)
         loss = criterion(outputs, targets)
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+#         optimizer.zero_grad()
+#         loss.backward()
+#         optimizer.step()
 
         # measure accuracy and record loss
         train_loss.append(loss.item())
-        pred_ids = outputs.data.max(1)[1]
-        train_corrects += pred_ids.eq(targets.data).cpu().numpy().tolist()
+        pred_ids = tf.max(outputs, 1)[1]
+        train_corrects = pred_ids[tf.where(pred_ids=targets)]
+#         pred_ids = outputs.data.max(1)[1]
+#         train_corrects += pred_ids.eq(targets.data).cpu().numpy().tolist()
         if batch_idx % opt.log_freq == 0:
             niter = epoch * len(train_loader) + batch_idx
 
