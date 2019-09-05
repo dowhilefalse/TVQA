@@ -6,7 +6,7 @@
 # from torch.autograd import Variable
 import tensorflow as tf
 
-class BidafAttn(nn.Module):
+class BidafAttn():
     """from the BiDAF paper https://arxiv.org/abs/1611.01603.
     Implemented by @easonnie and @jayleicn
     """
